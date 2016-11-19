@@ -1,3 +1,6 @@
+--
+-- Author : Floyda
+--
 
 local regular = require "regular"
 local utils = {}
@@ -16,19 +19,11 @@ function utils.find_all_str(str, pattern)
             break
         end
     until false
+
     return r
 end
 
-function utils.test_find_all_str()
-    local str = "a==1==2"
-    local tab = utils.find_all_str(str, "==")
-    for i,v in ipairs(tab) do
-        print(v[1], v[2])
-    end
-end
-
--- function utils.split_char(str, char, filter)
-function utils.split_char(str, char)
+function utils.split_char(str, char, filter)
     local char_pattern = regular.MULTIPLE_BLANK .. char .. regular.MULTIPLE_BLANK
     local result_pattern = ' ' .. char .. ' '
 

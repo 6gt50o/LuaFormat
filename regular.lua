@@ -1,6 +1,9 @@
+--
+-- Author : Floyda
+--
 
-local regular = {}
-
-regular.MULTIPLE_BLANK = '%s*'
+local regular = {
+    MULTIPLE_BLANK = '%s*'
+}
 
 return regular
