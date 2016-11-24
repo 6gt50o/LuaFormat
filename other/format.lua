@@ -1,53 +1,90 @@
 
+local utils = require('utils')
 require('common')
-local Node = require('Node')
+
+------------------------------------------------------------
+-- Line
+------------------------------------------------------------
 local Line = require('Line')
-
-local _nodes = {}
 local _lines = {}
-
-function new_node(c, ctype)
-    local node = Node.new()
-    node:set_type(ctype)
-    node:concat(c)
-    table.insert(_nodes, node)
-    return node
-end
 
 function new_line(node)
     local line = Line.new()
-    line:concat(node)
+    concat_line(line, node)
     table.insert(_lines, line)
     return line
 end
 
-function deal_node()
-    for i, v in ipairs(_nodes) do
-        print(i,v)
+function concat_line(line, node)
+    line:concat(node)
+end
+
+function foreach_line()
+    local indent = 0
+    for _, line in ipairs(_lines) do
+        line:set_indent(indent)
+        for _, node in ipairs(line:get_nodes()) do
+            if utils.innered(INDENT_NODE, node) then 
+                indent = indent + 1 
+            end
+            if utils.innered(UNINDENT_NODE, node) then 
+                indent = indent - 1 
+                line:set_indent(indent)
+            end
+        end
+    end
+
+    local result = ''
+    for _, line in ipairs(_lines) do
+        --[[Floyda Debug]] print("Floyda ==== format ==== line:get_indent()", line:get_indent(), line)
     end
 end
 
-function deal_char(node, c)
-    function innered(list, cell)
-        for _, v in pairs(list) do
-            if v == cell then return true end
+------------------------------------------------------------
+-- Node
+------------------------------------------------------------
+local Node = require('Node')
+local _nodes = {}
+
+function concat_node(node, c)
+    node:concat(c)
+end
+
+function new_node(c, ctype)
+    local node = Node.new()
+    node:set_type(ctype)
+    concat_node(node, c)
+    table.insert(_nodes, node)
+    return node
+end
+
+function foreach_node()
+    line = new_line()
+    for _, node in ipairs(_nodes) do
+        concat_line(line, node)
+        if node:get_type() == "ENTER" then
+            line = new_line()
         end
-        return false
     end
+end
 
-
-    function get_char_type()
+------------------------------------------------------------
+-- Main
+------------------------------------------------------------
+function foreach_char(node, c)
+    -- get type of variable c
+    function _get_char_type()
         for k,v in pairs(CHAR_TYPE) do
-            if innered(v, c) then return k end
+            if utils.innered(v, c) then return k end
         end
         return 'LETTER'
     end
-    local ctype = get_char_type()
+    local ctype = _get_char_type()
 
     if not node then
         node = new_node(c, ctype)
     elseif ctype == node:get_type() then
-        node:concat(c)
+        concat_node(node, c)
     else
         node = new_node(c, ctype)
     end
@@ -60,20 +97,23 @@ function format(content)
     repeat
         char = string.sub(content, 1, 1)
         content = string.sub(content, 2, #content)
-        node = deal_char(node, char)
-        -- print(node:get_type(), node.content)
+        node = foreach_char(node, char)
     until #content == 0
-
-    deal_node()
-
+    foreach_node()
+    foreach_line()
     return ''
 end
 
+------------------------------------------------------------
+-- EOF
+------------------------------------------------------------
+
 local content = [[
 for i=1,10 do
-    print(i)
-end
-]]
+    for j=1,10 do
+        print(i,j)
+    end
+end]]
 -- content = "hello world"
 
 format(content)

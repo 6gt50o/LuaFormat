@@ -1,18 +1,15 @@
 
+require('common')
+
 ------------------------------------------------------------
 -- Class
 ------------------------------------------------------------
 function class(super)
     local obj = {}
-    obj.__index = obj
-    -- obj.__add = function(a, b)
-    --         if type(b) == 'string' then a.repr = a.repr .. b end
-    --         if type(b) == 'table' and type(b.repr) == 'string' then a.repr = a.repr .. b.repr end
-    --         return a
-    --     end
-    -- obj.__tostring = function(t)
-    --         return t.repr
-    --     end
+    obj.__index    = obj
+    obj.__tostring = function(t)
+        return table.concat(t.node_list)
+    end
 
     setmetatable(obj, super)
 
@@ -38,6 +35,21 @@ function Line:ctor()
 end
 
 function Line:concat(node)
+    if node == nil then return end
+    if #self.node_list == 0 and node:get_type() == "BLANK" then return end
+    table.insert(self.node_list, tostring(node))
+end
+
+function Line:get_nodes()
+    return self.node_list
+end
+
+function Line:set_indent(indent)
+    self.indent = indent
+end
+
+function Line:get_indent()
+    return self.indent or 0
 end
 
 return Line

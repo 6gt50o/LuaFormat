@@ -8,3 +8,13 @@ CHAR_TYPE = {
     REVERSE_BRACKET = {')', '}', ']'},
     ENTER           = {'\n'},
 }
+
+INDENT_NODE = {
+    "function",
+    "for"
+}
+
+UNINDENT_NODE = {
+    "end"
+}
+
