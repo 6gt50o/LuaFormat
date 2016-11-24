@@ -45,7 +45,7 @@ function Node:set_type(type)
     self.type = type
 end
 
-function Node:concat(c)
+function Node:push(c)
     if self.repr == ' ' and c == ' ' then return end
     self.repr = self.repr .. c
 end

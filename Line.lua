@@ -34,9 +34,9 @@ function Line:ctor()
     self.node_list = {}
 end
 
-function Line:concat(node)
+function Line:push(node)
     if node == nil then return end
-    if #self.node_list == 0 and node:get_type() == "BLANK" then return end
+    if #self.node_list == 0 and node:get_type() == NODE_TYPE_KEY.BLANK then return end
     table.insert(self.node_list, tostring(node))
 end
 
